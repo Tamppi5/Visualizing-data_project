@@ -1,0 +1,39 @@
+[
+{
+    "chartType":"Line",
+    "xCoordName":"degrees outside in °C",
+    "yCoordName":"the amount of snow in cm",
+    "xCoordMax":40,
+    "xCoordMin":-40,
+    "yCoordMax":100,
+    "yCoordMin":0,
+    "dataPoints":[
+        {
+            "x":-40,
+            "y":90
+        },
+        {
+            "x":-80,
+            "y":40
+        },
+        {
+            "x":0,
+            "y":10
+        },
+        {
+            "x":10,
+            "y":2
+        },
+        {
+            "x":20,
+            "y":0
+        },
+        {
+            "x":35,
+            "y":0
+        }
+    ],
+    "hasGrid":true
+
+}
+]

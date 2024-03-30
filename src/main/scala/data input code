@@ -1,0 +1,153 @@
+import scalafx.Includes._
+import scalafx.application.JFXApp
+import scalafx.event.ActionEvent
+import scalafx.geometry.Insets
+import scalafx.scene.Scene
+import scalafx.scene.canvas.Canvas
+import scalafx.scene.layout.VBox
+import scalafx.scene.layout.HBox
+import scalafx.scene.layout.GridPane
+import scalafx.scene.layout.Background
+import scalafx.scene.layout.BackgroundFill
+import scalafx.scene.layout.CornerRadii
+import scalafx.scene.layout.ColumnConstraints
+import scalafx.scene.layout.RowConstraints
+import scalafx.scene.paint.Color._
+import scalafx.scene.control.{Button, Label, MenuButton, MenuItem, TextField}
+
+object Main extends JFXApp {
+
+  /*
+  Creation of a new primary stage (Application window).
+  We can use Scala's anonymous subclass syntax to get quite
+  readable code.
+  */
+
+    stage = new JFXApp.PrimaryStage {
+      title.value = "Visualizing data"
+      width = 1100
+      height = 800
+  }
+    val root = new GridPane //Create GridPane
+    val scene = new Scene(root) //Scene acts as a container for the scene graph
+    stage.scene = scene
+
+    //Create some components to fill the grid with
+    val bottomBox = new HBox //Horizontal box is like VBox except children are laid in a row.
+    val sideBox = new VBox
+    val canvas = new Canvas(600, 600)
+
+    /*
+    We aim for this.
+    +----+----------------------+
+    |    |                      |
+    |    |                      |
+    |    |                      |
+    |    +----------------------+
+    |    |                      |
+    +----+----------------------+
+    */
+
+    //Add child components to grid
+    //Method usage: add(child, columnIndex, rowIndex, columnSpan, rowSpan)
+    root.add(sideBox, 0, 0, 1, 2)
+    root.add(canvas, 1, 0)
+    root.add(bottomBox, 1, 1)
+
+    //Define grid row and column size
+    val column0 = new ColumnConstraints
+    val column1 = new ColumnConstraints
+    val row0 = new RowConstraints
+    val row1 = new RowConstraints
+
+    column0.percentWidth = 16
+    column1.percentWidth = 84
+    row0.percentHeight = 84
+    row1.percentHeight = 16
+
+    root.columnConstraints = Array[ColumnConstraints](column0, column1) //Add constraints in order
+    root.rowConstraints = Array[RowConstraints](row0, row1)
+
+    sideBox.background = new Background(Array(new BackgroundFill((Gray), CornerRadii.Empty, Insets.Empty))) //Set sideBox background color
+    bottomBox.background = new Background(Array(new BackgroundFill((Blue), CornerRadii.Empty, Insets.Empty))) //Set bottomBox background color
+
+    val nLabel = new Label("\n")
+    val introLabel = new Label("Current chart:")
+    val selectionMenu = new MenuButton("Select chart type")
+    val barChart = new MenuItem("Bar chart")
+    val pieChart = new MenuItem("Pie chart")
+    val lineChart = new MenuItem("Line chart")
+    val bubbleChart = new MenuItem("Bubble chart")
+    val dataNroLabel = new Label("Number of data inputs:")
+    val howMuchData = new MenuButton("0")
+    selectionMenu.items = List(barChart, pieChart, lineChart, bubbleChart)
+    sideBox.children += introLabel
+    sideBox.children += selectionMenu
+
+  for (i <- 1 to 10) {
+      val nroOfData = new MenuItem(i.toString)
+      nroOfData.onAction = (e:ActionEvent) => {
+        howMuchData.text = i.toString
+        if(sideBox.children.size >= 5) {
+          sideBox.children.remove(sideBox.children.size-1)
+        }
+        var valOfSel = {
+          if(selectionMenu.getText == "Bar chart") 0
+          else if (selectionMenu.getText == "Pie chart") 1
+          else if (selectionMenu.getText == "Line chart") 2
+          else 3
+        }
+        new Data(valOfSel, sideBox, howMuchData.getText.toInt)
+      }
+      howMuchData.items += nroOfData
+    }
+    sideBox.children += dataNroLabel
+    sideBox.children += howMuchData
+
+
+//        val label = new Label("Write the data below")
+//
+//        sideBox.children += label
+//        label.text
+//
+//        for (i <- 1 to 5) {
+//          var dataNro = i
+//          sideBox.children += new Label("Data input number " + dataNro)
+//          var textInput = new TextField
+//          sideBox.children += textInput
+//          textInput.text
+//        }
+    barChart.onAction = (e:ActionEvent) => {
+      if(sideBox.children.size >= 5) {
+        sideBox.children.remove(sideBox.children.size-1)
+      }
+      selectionMenu.text = "Bar chart"
+      new Data(0, sideBox, howMuchData.getText.toInt)
+    }
+
+    pieChart.onAction = (e:ActionEvent) => {
+      if(sideBox.children.size >= 5) {
+        sideBox.children.remove(sideBox.children.size-1)
+      }
+      selectionMenu.text = "Pie chart"
+      new Data(1, sideBox, howMuchData.getText.toInt)
+    }
+    lineChart.onAction = (e:ActionEvent) => {
+      if(sideBox.children.size >= 5) {
+        sideBox.children.remove(sideBox.children.size-1)
+      }
+      selectionMenu.text = "Line chart"
+      new Data(2, sideBox, howMuchData.getText.toInt)
+    }
+    bubbleChart.onAction = (e:ActionEvent) => {
+      if(sideBox.children.size >= 5) {
+        sideBox.children.remove(sideBox.children.size-1)
+      }
+      selectionMenu.text = "Bubble chart"
+      new Data(3, sideBox, howMuchData.getText.toInt)
+    }
+}
+
+trait ValidationError
+case object EmptyField extends ValidationError
+case object TooLong extends ValidationError
